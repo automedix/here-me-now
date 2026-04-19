@@ -15,7 +15,7 @@ const __dirname = dirname(__filename);
 initDatabase();
 
 // Initialize NOSTR
-NOSTRService.init();
+NostrService.init();
 
 const app = Fastify({
   logger: true,
@@ -192,6 +192,20 @@ app.post('/api/admin/checkins/:id/status', async (request, reply) => {
   } catch (error) {
     app.log.error(error);
     return reply.status(500).send({ error: 'Failed to update status' });
+  }
+});
+
+// Praxis: Notizen speichern
+app.post('/api/admin/checkins/:id/notes', async (request, reply) => {
+  const { id } = request.params as { id: string };
+  const { notes } = request.body as { notes: string };
+
+  try {
+    CheckinService.updateNotes(id, notes);
+    return { success: true };
+  } catch (error) {
+    app.log.error(error);
+    return reply.status(500).send({ error: 'Failed to update notes' });
   }
 });
 

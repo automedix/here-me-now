@@ -134,6 +134,17 @@ export class CheckinService {
   /**
    * Find checkin by ID
    */
+  /**
+   * Update checkin notes
+   */
+  static updateNotes(checkinId: string, notes: string): Checkin {
+    const stmt = db.prepare(`
+      UPDATE checkins SET notes = ? WHERE id = ?
+    `);
+    stmt.run(notes, checkinId);
+    return this.findById(checkinId)!;
+  }
+
   static findById(id: string): Checkin | undefined {
     const stmt = db.prepare('SELECT * FROM checkins WHERE id = ?');
     return stmt.get(id) as Checkin | undefined;
