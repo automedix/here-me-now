@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Check-in | Praxis</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Loading Screen -->
+    <div id="loading" class="screen active">
+      <div class="spinner"></div>
+      <p>Verbindung wird hergestellt...</p>
+    </div>
+
+    <!-- Welcome Screen (First Time) -->
+    <div id="welcome" class="screen">
+      <div class="logo">🏥</div>
+      <h1>Willkommen</h1>
+      <p class="subtitle">Digitales Check-in für Ihre Praxis</p>
+      
+      <div class="info-box">
+        <p>🔒 <strong>Datenschutz garantiert</strong></p>
+        <p>Ihre Daten werden Ende-zu-Ende verschlüsselt und nur auf Ihrem Gerät gespeichert.</p>
+      </div>
+
+      <button id="btn-start" class="btn btn-primary btn-large">
+        Check-in starten
+      </button>
+    </div>
+
+    <!-- Main Check-in Screen -->
+    <div id="checkin" class="screen">
+      <header>
+        <div class="location-name" id="location-name">Praxis</div>
+        <div class="user-id" id="user-id">ID: ...</div>
+      </header>
+
+      <main>
+        <h2>Ihr Check-in</h2>
+
+        <div class="form-group">
+          <label>Haben Sie einen Termin?</label>
+          <div class="toggle-group">
+            <button id="btn-appointment-yes" class="toggle" data-value="yes">✓ Ja</button>
+            <button id="btn-appointment-no" class="toggle active" data-value="no">✗ Nein</button>
+          </div>
+        </div>
+
+        <div class="form-group" id="name-group" style="display: none;">
+          <label for="input-lastname">Nachname (bei erstem Besuch)</label>
+          <input type="text" id="input-lastname" placeholder="Ihr Nachname" maxlength="50">
+        </div>
+
+        <div class="form-group" id="birthdate-group" style="display: none;">
+          <label for="input-birthdate">Geburtsdatum (bei erstem Besuch)</label>
+          <input type="date" id="input-birthdate">
+        </div>
+
+        <div class="form-group">
+          <label for="input-reason">Anliegen / Grund der Vorstellung (optional)</label>
+          <textarea id="input-reason" placeholder="z.B. Kontrolle, akute Beschwerden..." maxlength="200"></textarea>
+          <span class="char-count"><span id="reason-count">0</span>/200</span>
+        </div>
+
+        <div class="form-group">
+          <label for="input-notes">Anmerkungen (optional)</label>
+          <textarea id="input-notes" placeholder="Weitere Hinweise für das Praxispersonal..." maxlength="200"></textarea>
+          <span class="char-count"><span id="notes-count">0</span>/200</span>
+        </div>
+
+        <button id="btn-checkin" class="btn btn-primary btn-large">
+          <span class="btn-text">Jetzt einchecken</span>
+          <span class="spinner-small" style="display: none;"></span>
+        </button>
+      </main>
+    </div>
+
+    <!-- Success Screen -->
+    <div id="success" class="screen">
+      <div class="success-icon">✓</div>
+      <h2>Eingecheckt!</h2>
+      <p class="subtitle" id="success-message">Sie sind in der Warteliste.</p>
+      
+      <div class="info-box">
+        <p id="position-info">Bitte warten Sie im Wartebereich.</p>
+        <p id="notification-hint">Sie werden per Nachricht aufgerufen.</p>
+      </div>
+
+      <div class="qr-section" id="qr-section">
+        <p>Ihr Check-in QR-Code:</p>
+        <canvas id="qr-canvas"></canvas>
+        <p class="hint">Zeigen Sie diesen bei Rückfragen vor.</p>
+      </div>
+
+      <button id="btn-done" class="btn btn-secondary">Schließen</button>
+    </div>
+
+    <!-- Message Screen (when called) -->
+    <div id="message" class="screen">
+      <div class="message-icon">📩</div>
+      <h2>Nachricht</h2>
+      <div class="message-content" id="message-content">
+        <!-- Dynamic message -->
+      </div>
+      <button id="btn-message-ok" class="btn btn-primary">Verstanden</button>
+    </div>
+
+    <!-- Error Screen -->
+    <div id="error" class="screen">
+      <div class="error-icon">⚠️</div>
+      <h2>Fehler</h2>
+      <p id="error-message">Etwas ist schiefgelaufen.</p>
+      <button id="btn-retry" class="btn btn-primary">Erneut versuchen</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/nostr-tools@2.7.1/lib/nostr.bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

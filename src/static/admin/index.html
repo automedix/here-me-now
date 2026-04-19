@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Praxis Dashboard | Here-Me-Now</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+      <div class="login-box">
+        <div class="logo">🏥</div>
+        <h1>Here-Me-Now</h1>
+        <p>Praxis Dashboard</p>
+        
+        <form id="login-form">
+          <div class="form-group">
+            <label for="praxis-id">Praxis-ID</label>
+            <input type="text" id="praxis-id" placeholder="z.B. dr-mueller-001" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="admin-key">Admin Passwort / API Key</label>
+            <input type="password" id="admin-key" placeholder="Ihr geheimer Schlüssel" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="server-nostr-key">NOSTR nsec (für DMs)</label>
+            <input type="password" id="server-nostr-key" placeholder="nsec1... (optional)">
+            <small>Für den Versand von Nachrichten an Patienten</small>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block">Anmelden</button>
+        </form>
+        
+        <div class="login-hint">
+          <p>Für Demo: Praxis-ID = <code>demo-praxis-001</code></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard-screen" class="screen">
+      <header class="dashboard-header">
+        <div class="header-left">
+          <h1>🏥 <span id="praxis-name">Praxis</span></h1>
+        </div>
+        <div class="header-right">
+          <button id="btn-refresh" class="btn btn-icon" title="Aktualisieren">🔄</button>
+          <button id="btn-settings" class="btn btn-icon" title="Einstellungen">⚙️</button>
+          <button id="btn-logout" class="btn btn-secondary">Abmelden</button>
+        </div>
+      </header>
+
+      <main class="dashboard-main">
+        <!-- Stats Row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value" id="stat-waiting">0</div>
+            <div class="stat-label">Wartend</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-called">0</div>
+            <div class="stat-label">Aufgerufen</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-new">0</div>
+            <div class="stat-label">Neue Patienten</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label">Heute</div>
+          </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="dashboard-grid">
+          <!-- Checkin List -->
+          <section class="checkin-section">
+            <div class="section-header">
+              <h2>Warteliste</h2>
+              <div class="filter-tabs">
+                <button class="tab active" data-filter="all">Alle</button>
+                <button class="tab" data-filter="waiting">Wartend</button>
+                <button class="tab" data-filter="called">Aufgerufen</button>
+              </div>
+            </div>
+            
+            <div class="checkin-list" id="checkin-list">
+              <!-- Dynamic content -->
+              <div class="empty-state">
+                <p>Keine Patienten in der Warteliste</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Detail Panel -->
+          <aside class="detail-panel" id="detail-panel">
+            <div class="empty-state">
+              <p>Wählen Sie einen Patienten aus der Liste</p>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <!-- Patient Link Modal -->
+    <div id="link-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Patient verknüpfen</h3>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-info">Verknüpfen Sie den Patienten mit seiner Akte für zukünftige Besuche.</p>
+          
+          <form id="link-form">
+            <div class="form-group">
+              <label for="link-lastname">Nachname *</label>
+              <input type="text" id="link-lastname" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="link-birthdate">Geburtsdatum</label>
+              <input type="date" id="link-birthdate">
+            </div>
+            
+            <div class="form-group">
+              <label for="link-insurance">Versicherungsnummer</label>
+              <input type="text" id="link-insurance" placeholder="Krankenversicherungsnummer">
+            </div>
+            
+            <div class="form-group">
+              <label for="link-phone">Telefon</label>
+              <input type="tel" id="link-phone" placeholder="+49...">
+            </div>
+            
+            <div class="form-group">
+              <label for="link-notes">Notizen</label>
+              <textarea id="link-notes" placeholder="Interne Notizen..."></textarea>
+            </div>
+            
+            <input type="hidden" id="link-patient-id">
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-cancel">Abbrechen</button>
+          <button type="submit" form="link-form" class="btn btn-primary">Verknüpfen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div id="message-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Nachricht senden</h3>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="quick-messages">
+            <p>Schnellantworten:</p>
+            <div class="quick-buttons">
+              <button class="btn btn-small" data-msg="Bitte kommen Sie nach Sprechzimmer 1.">Sprechzimmer 1</button>
+              <button class="btn btn-small" data-msg="Bitte kommen Sie nach Sprechzimmer 2.">Sprechzimmer 2</button>
+              <button class="btn btn-small" data-msg="Bitte kommen Sie nach Sprechzimmer 3.">Sprechzimmer 3</button>
+              <button class="btn btn-small" data-msg="Bitte kommen Sie nach Sprechzimmer 4.">Sprechzimmer 4</button>
+              <button class="btn btn-small" data-msg="Wir bitten um etwas Geduld, es dauert noch ca. 10 Minuten.">+10 Min</button>
+              <button class="btn btn-small" data-msg="Wir bitten um etwas Geduld, es dauert noch ca. 20 Minuten.">+20 Min</button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="message-text">Ihre Nachricht</label>
+            <textarea id="message-text" rows="4" placeholder="Nachricht eingeben..."></textarea>
+          </div>
+          
+          <input type="hidden" id="message-checkin-id">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-cancel">Abbrechen</button>
+          <button type="button" id="btn-send-message" class="btn btn-primary">Senden</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
